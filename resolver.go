@@ -8,11 +8,11 @@ import (
 
 // Builder is the implementaion of grpc.naming.Resolver
 type Builder struct {
-	addr string
+	addr Address
 }
 
 // NewBuilder return Builder with service name
-func NewBuilder(addr string) resolver.Builder {
+func NewBuilder(addr Address) resolver.Builder {
 	return &Builder{addr: addr}
 }
 
@@ -27,10 +27,7 @@ func (b *Builder) Build(target resolver.Target, cc resolver.ClientConn, opts res
 		watcher: w,
 	}
 
-	go func() {
-		w.Run(context.Background())
-	}()
-
+	go w.Run(context.Background())
 	go r.watch()
 
 	return r, nil
@@ -54,12 +51,12 @@ func (r *Resolver) Close() {
 }
 
 func (r *Resolver) watch() {
-	for aa := range r.watcher.Watch() {
+	for consulAddresses := range r.watcher.Watch() {
 		var addresses []resolver.Address
 
-		for _, a := range aa {
+		for _, addr := range consulAddresses {
 			addresses = append(addresses, resolver.Address{
-				Addr: a,
+				Addr: addr,
 			})
 		}
 
