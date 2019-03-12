@@ -8,12 +8,16 @@ import (
 	"github.com/hashicorp/consul/watch"
 )
 
-type Watcher struct {
-	service   string
-	plan      *watch.Plan
-	addresses chan []string
-	consul    string
-}
+type (
+	Address = string
+
+	Watcher struct {
+		service   string
+		plan      *watch.Plan
+		addresses chan []Address
+		consul    string
+	}
+)
 
 func NewWatcher(consul, service, dc, tag string) (*Watcher, error) {
 	plan, err := watch.Parse(map[string]interface{}{
@@ -48,7 +52,7 @@ func NewWatcher(consul, service, dc, tag string) (*Watcher, error) {
 	}, nil
 }
 
-func (w *Watcher) Watch() chan []string {
+func (w *Watcher) Watch() chan []Address {
 	return w.addresses
 }
 

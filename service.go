@@ -50,22 +50,21 @@ func (s *Service) Register() error {
 
 	go func() {
 		ticker := time.NewTicker(time.Second * time.Duration(s.ttl/2))
-		for {
-			<-ticker.C
+		defer ticker.Stop()
+		for range ticker.C {
 			if err := s.client.Agent().UpdateTTL(s.id, "", "passing"); err != nil {
 				log.Println("update ttl of service error ", err)
 			}
 		}
 	}()
 
-	err := s.client.Agent().ServiceRegister(regis)
-	if err != nil {
+	if err := s.client.Agent().ServiceRegister(regis); err != nil {
 		return err
 	}
 
 	// initial register service check
 	check := api.AgentServiceCheck{TTL: fmt.Sprintf("%ds", s.ttl), Status: "passing"}
-	err = s.client.Agent().CheckRegister(&api.AgentCheckRegistration{ID: s.id, Name: s.name, ServiceID: s.id, AgentServiceCheck: check})
+	err := s.client.Agent().CheckRegister(&api.AgentCheckRegistration{ID: s.id, Name: s.name, ServiceID: s.id, AgentServiceCheck: check})
 	if err != nil {
 		return err
 	}
