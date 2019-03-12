@@ -51,12 +51,12 @@ func (r *Resolver) Close() {
 }
 
 func (r *Resolver) watch() {
-	for consulAddresses := range r.watcher.Watch() {
+	for aa := range r.watcher.Watch() {
 		var addresses []resolver.Address
 
-		for _, addr := range consulAddresses {
+		for _, a := range aa {
 			addresses = append(addresses, resolver.Address{
-				Addr: addr,
+				Addr: a,
 			})
 		}
 
