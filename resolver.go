@@ -8,16 +8,22 @@ import (
 
 // Builder is the implementaion of grpc.naming.Resolver
 type Builder struct {
-	addr Address
+	addr       string
+	tag        string
+	datacenter string
 }
 
 // NewBuilder return Builder with service name
-func NewBuilder(addr Address) resolver.Builder {
-	return &Builder{addr: addr}
+func NewBuilder(addr, tag, datacenter string) resolver.Builder {
+	return &Builder{
+		addr:       addr,
+		tag:        tag,
+		datacenter: datacenter,
+	}
 }
 
 func (b *Builder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOption) (resolver.Resolver, error) {
-	w, err := NewWatcher(b.addr, target.Endpoint, "", "")
+	w, err := NewWatcher(b.addr, target.Endpoint, b.datacenter, b.tag)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	r := ambassador.NewBuilder("127.0.0.1:8500")
+	r := ambassador.NewBuilder("127.0.0.1:8500", "", "")
 
 	resolver.Register(r)
 
